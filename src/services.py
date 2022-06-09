@@ -21,7 +21,7 @@ def get_account_by_id(db: _orm.Session, accountId: str):
 
 
 def create_account(db: _orm.Session, account: _schemas.AccountCreate):
-    db_account = _models.Account(name=account.name, surname=account.surname)
+    db_account = _models.Account(name=account.name, surname=account.surname, balance = 0)
     db.add(db_account)
     db.commit()
     db.refresh(db_account)
