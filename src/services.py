@@ -16,7 +16,7 @@ def get_db():
         db.close()
 
 
-def get_account_by_id(db: _orm.Session, accountId: str):
+def get_account_by_accountId(db: _orm.Session, accountId: str):
     return db.query(_models.Account).filter(_models.Account.accountId == accountId).first()
 
 def get_accounts(db: _orm.Session, skip: int = 0, limit: int = 100):
