@@ -15,7 +15,9 @@
                     padding: 4px;
 
                 }
+                
             </style>
+    
     </head>
     <body>
         <h1> Istituto Bancario Lombardo-Calabrese</h1>
@@ -23,26 +25,35 @@
         <label for="idAccount"> Inserisci account:</label> <br>
         <input type="text" id="idAccount" name="idAccount" minlength="20" maxlength="20" value=""> <br>
         <br>
-        <input type="submit">
+        <input id="button" type="submit" onclick="showInformation()">
         </form>
         <br>
         <br>
+    <script>
+        function showInformation(){
+            if(document.getElementById(infoAccount).style.visibility= "none"){
+            document.getElementById(infoAccount).style.visibility='';
+            }
 
-        <h3>Trasferimenti recenti</h3>
-        <table>
-            <tr>
-                <th>Utente</th>
-                <th>Destinatario o Mittente</th>
-                <th>Saldo Operazione</th>
-            </tr>
-            
-            <tr>
-                <th>mettere collegamento con idAccount</th>
-                <th>mettere collegamento con destinatario</th>
-                <th>mettere collegamento con Saldo</th>
+        } 
+    </script>
+        <div id="infoAccount" style="display: none">
+            <h3 id="testoTrasferimenti" class="hiddenInformation"> Trasferimenti recenti</h3>
+            <table class="hiddenInformation">
+                <tr>
+                    <th>Utente</th>
+                    <th>Destinatario o Mittente</th>
+                    <th>Saldo Operazione</th>
+                </tr>
                 
-            </tr>
-        </table>
+                <tr>
+                    <th>h</th>
+                    <th>h</th>
+                    <th>h</th>
+                </tr>
+            </table>
+        </div>
+       
     </body>
 
 </html>
