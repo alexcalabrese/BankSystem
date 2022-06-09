@@ -20,10 +20,6 @@ def read_accounts(skip: int=0, limit: int=10, db: _orm.Session = _fastapi.Depend
     accounts = _services.get_accounts(db = db, skip = skip, limit = limit)
     return accounts
 
-@app.post("/api/account", response_model=_schemas.Account)
+@app.post("/api/account")
 def create_account(account: _schemas.AccountCreate, db: _orm.Session = _fastapi.Depends(_services.get_db)):
-    return _services.create_account(db = db, account = account)
-
-    # @app.get("/items/{item_id}")
-    # def read_item(item_id: int, q: Union[str, None] = None):
-    #     return {"item_id": item_id, "q": q}
+    return {"accountId" : _services.create_account(db = db, account = account).accountId}
