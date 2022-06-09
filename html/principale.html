@@ -2,15 +2,47 @@
 <html>
     <head>
             <title> HomePage: informazioni account</title>
+            <style>
+                table{
+                    font-family: Arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+
+                td,th{
+                    border: 2px solid #dddddddd;
+                    text-align: left;
+                    padding: 4px;
+
+                }
+            </style>
     </head>
     <body>
         <h1> Istituto Bancario Lombardo-Calabrese</h1>
-        <form action="">
+        <form action="" autocomplete="off">
         <label for="idAccount"> Inserisci account:</label> <br>
-        <br>
         <input type="text" id="idAccount" name="idAccount" minlength="20" maxlength="20" value=""> <br>
+        <br>
         <input type="submit">
         </form>
+        <br>
+        <br>
+
+        <h3>Trasferimenti recenti</h3>
+        <table>
+            <tr>
+                <th>Utente</th>
+                <th>Destinatario o Mittente</th>
+                <th>Saldo Operazione</th>
+            </tr>
+            
+            <tr>
+                <th>mettere collegamento con idAccount</th>
+                <th>mettere collegamento con destinatario</th>
+                <th>mettere collegamento con Saldo</th>
+                
+            </tr>
+        </table>
     </body>
 
 </html>
