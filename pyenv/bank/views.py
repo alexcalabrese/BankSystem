@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from .models import Account
-from .serializers import AccountSerializer
+from .models import Account, Transaction
+from .serializers import AccountSerializer, TransactionSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -34,7 +34,28 @@ def account_detail(request, id):
         return Response(serializer.data)
 
     if request.method == 'POST':
-        pass
+        try:
+            account_from = Account.objects.get(pk=id)
+            account_to = Account.objects.get(pk=id)
+        except Account.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        amount = float(request.POST.get('amount', False))
+
+        if amount < 0 and amount > account_from.balance:
+            return Response({'Message': 'Not enough money'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            previus_balance = account_to.balance
+            account_to.balance = (previus_balance + amount)
+            account_to.save()
+
+            self_transaction = Transaction.objects.create(
+                account_from=account_from,
+                account_to=account_to,
+                amount=amount
+            )
+            serializer = TransactionSerializer(self_transaction)
+            return Response(serializer.data)
 
     if request.method == 'DELETE':
         pass
