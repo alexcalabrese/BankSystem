@@ -1,4 +1,5 @@
 import imp
+import secrets
 import sqlalchemy as _sql
 import sqlalchemy.orm as _orm
 import uuid
@@ -12,7 +13,7 @@ import src.database as _database
 class Account(_database.Base):
     __tablename__ = "accounts"
     accountId = _sql.Column(
-        _sql.String, primary_key=True, default= lambda: str(uuid.uuid4()))
+        _sql.String, primary_key=True, default= secrets.token_hex(10))
     name = _sql.Column(_sql.String)
     surname = _sql.Column(_sql.String)
     balance = _sql.Column(_sql.Float, default=0)
