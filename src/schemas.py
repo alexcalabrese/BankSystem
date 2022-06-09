@@ -26,7 +26,6 @@ class Transaction(_TransactionBase):
 class _AccountBase(BaseModel):
     name: str
     surname: str
-    balance: float
 
 
 class AccountCreate(_AccountBase):
@@ -35,6 +34,7 @@ class AccountCreate(_AccountBase):
 
 class Account(_AccountBase):
     accountId: str
+    balance: float
     transactions: List[Transaction] = []
 
     class Config:
