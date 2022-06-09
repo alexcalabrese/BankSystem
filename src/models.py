@@ -12,16 +12,16 @@ import src.database as _database
 class Account(_database.Base):
     __tablename__ = "accounts"
     accountId = _sql.Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+        _sql.String, primary_key=True, default= lambda: str(uuid.uuid4()))
     name = _sql.Column(_sql.String)
     surname = _sql.Column(_sql.String)
-    balance = _sql.Column(_sql.Float)
+    balance = _sql.Column(_sql.Float, default=0)
 
 
 class Transaction(_database.Base):
     __tablename__ = "transactions"
     transactionId = _sql.Column(
-        _sql.String, primary_key=True, default=uuid.uuid4)
+        _sql.String, primary_key=True, default= lambda: str(uuid.uuid4()))
 
     account_from_id = _sql.Column(
         _sql.String, _sql.ForeignKey("accounts.accountId"))

@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 
 
 class _TransactionBase(BaseModel):
-    account_from: UUID = Field(default_factory=uuid4)
-    account_to: UUID = Field(default_factory=uuid4)
+    account_from: str
+    account_to: str
     amount: float
 
 
@@ -15,7 +15,7 @@ class TransactionCreate(_TransactionBase):
 
 
 class Transaction(_TransactionBase):
-    id: UUID = Field(default_factory=uuid4)
+    id: str
     date_created: _dt.datetime
     date_last_updated: _dt.datetime
 
@@ -34,7 +34,7 @@ class AccountCreate(_AccountBase):
 
 
 class Account(_AccountBase):
-    accountId: UUID = Field(default_factory=uuid4)
+    accountId: str
     transactions: List[Transaction] = []
 
     class Config:
