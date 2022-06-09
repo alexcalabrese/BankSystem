@@ -12,7 +12,7 @@ import src.database as _database
 class Account(_database.Base):
     __tablename__ = "accounts"
     accountId = _sql.Column(
-        _sql.String, primary_key=True, default=uuid.uuid4)
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = _sql.Column(_sql.String)
     surname = _sql.Column(_sql.String)
     balance = _sql.Column(_sql.Float)
