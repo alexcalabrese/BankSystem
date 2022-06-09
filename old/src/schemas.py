@@ -8,11 +8,17 @@ class _TransactionBase(BaseModel):
     account_from: str
     account_to: str
     amount: float
-
+    
+class _SelfTransactionBase(BaseModel):
+    account_from: str
+    account_to: str
+    
 
 class TransactionCreate(_TransactionBase):
     pass
 
+class SelfTransactionCreate(_SelfTransactionBase):
+    amount: float
 
 class Transaction(_TransactionBase):
     id: str

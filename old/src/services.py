@@ -29,9 +29,9 @@ def create_account(db: _orm.Session, account: _schemas.AccountCreate):
     db.refresh(db_account)
     return db_account
 
-# def create_transaction(db: _orm.Session, post: _schemas.TransactionCreate, user_id: int):
-#     db_transaction = _models.Transaction(**post.dict(), owner_id=user_id)
-#     db.add(db_transaction)
-#     db.commit()
-#     db.refresh(db_transaction)
-#     return db_transaction
+def create_self_transaction(db: _orm.Session, transaction: _schemas.TransactionCreate):
+    db_transaction = _models.Transaction(**transaction.dict())
+    db.add(db_transaction)
+    db.commit()
+    db.refresh(db_transaction)
+    return db_transaction
