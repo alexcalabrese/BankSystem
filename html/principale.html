@@ -26,7 +26,7 @@
             <h3 id="textTransferMoney" class="hiddenInformation"> Money transfers</h3>
             <table class="hiddenInformation">
                 <tr>
-                    <th>Utente</th>
+                    <th> </th>
                     <th>Destinatario o Mittente</th>
                     <th>Saldo Operazione</th>
                 </tr>
@@ -70,7 +70,46 @@
 
     }
                                                 
-    
+    async function informationAccount(url = '', data = {}){
+      
+        const response = await fetch(url, {
+            method: 'POST', 
+            mode: 'cors',
+            cache: 'no-cache', 
+            credentials: 'same-origin', 
+            headers: {
+                ' Content-Type': 'application/json'
+     
+            },
+            redirect: 'follow', 
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    }
 
+    postData('https://example.com/answer', { answer: 42 })
+        .then(data => {
+         console.log(data); 
+        });
+ 
+   function successfulfetch(data){
+        fetch('flowers.jpg')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not OK');
+            }
+            return response.blob();
+        })
+        .then(myBlob => {
+            myImage.src = URL.createObjectURL(myBlob);
+         })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+
+   }
+   
+    
 
 </script>
