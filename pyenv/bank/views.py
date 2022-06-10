@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.http import JsonResponse
 from .models import Account, Transaction
 from .serializers import AccountSerializer, TransactionSerializer
@@ -100,9 +101,6 @@ def new_transfer(request):
         account_from_id = str(request.POST.get('account_from_id', False))
         account_to_id = str(request.POST.get('account_to_id', False))
 
-        print("account_from_id: " + account_from_id)
-        print("account_to_id: " + account_to_id)
-
         try:
             account_from = Account.objects.get(pk=account_from_id)
             account_to = Account.objects.get(pk=account_to_id)
@@ -139,3 +137,51 @@ def new_transfer(request):
                                           "updated_balance": account_to.balance})
 
             return Response(response, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def new_divert(request):
+    if request.method == 'POST':
+        transaction_id = request.POST.get('transaction_id', False)
+
+        try:
+            transaction = Transaction.objects.get(pk=transaction_id)
+        except ValidationError as error:
+            return Response({'Message': error.messages[0]}, status=status.HTTP_404_NOT_FOUND)
+        except Transaction.DoesNotExist:
+            return Response({'Message': 'Transaction does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            transaction_account_from = Account.objects.get(
+                pk=transaction.account_from.id)
+            transaction_account_to = Account.objects.get(
+                pk=transaction.account_to.id)
+        except Account.DoesNotExist:
+            return Response({'Message': 'One of two account no longer exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        reversed_amount = transaction.amount
+        difference_between_amounts = transaction_account_to.balance - reversed_amount
+        print("Differences: ", difference_between_amounts)
+
+        if difference_between_amounts >= 0:
+            account_from_previus_balance = transaction_account_from.balance
+            account_to_previus_balance = transaction_account_to.balance
+
+            transaction_account_from.balance = (
+                account_from_previus_balance + reversed_amount)
+            transaction_account_to.balance = (
+                account_to_previus_balance - reversed_amount)
+
+            transaction_account_from.save()
+            transaction_account_to.save()
+
+            new_transaction = Transaction.objects.create(
+                account_from=transaction_account_to,
+                account_to=transaction_account_from,
+                amount=-reversed_amount
+            )
+        else:
+            return Response({'Message': 'Not enough money to divert'}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_transaction_serializer = TransactionSerializer(new_transaction)
+        return Response(new_transaction_serializer.data)
