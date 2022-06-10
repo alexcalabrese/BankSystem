@@ -19,7 +19,7 @@ def account_list(request):
         serializer = AccountSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"accountId": serializer.data['id']}, status=status.HTTP_201_CREATED)
+            return Response({"account_id": serializer.data['id']}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'HEAD'])
@@ -28,11 +28,15 @@ def account_detail(request, id):
     try:
         account = Account.objects.get(pk=id)
     except Account.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'Message': 'Account not found'}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = AccountSerializer(account)
-        return Response(serializer.data)
+        response = JsonResponse(serializer.data, safe=False)
+        response['X-Sistema-Bancario'] = str(serializer['name'].value) + \
+            ";" + str(serializer['surname'].value)
+
+        return response
 
     if request.method == 'POST':
         try:
