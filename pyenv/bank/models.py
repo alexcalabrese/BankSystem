@@ -14,7 +14,7 @@ class Account(models.Model):
     balance = models.FloatField(default=0, editable=False)
 
     def __str__(self):
-        return self.name + self.surname
+        return self.name + " " + self.surname
 
 
 class Transaction(models.Model):
@@ -25,6 +25,8 @@ class Transaction(models.Model):
     account_to = models.ForeignKey(
         Account, related_name='account_to', null=True, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
 
     def __str__(self):
         return str(self.id)
