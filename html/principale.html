@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-            <title> HomePage: informazioni account</title>
+            <title> HomePage </title>
             <style>
                 table{
                     font-family: Arial, sans-serif;
@@ -20,10 +20,10 @@
     
     </head>
     <body>
-        <h1> Istituto Bancario Lombardo-Calabrese</h1>
+        <h1> Bank </h1>
         
         <div id="infoAccount" style="display: visible">
-            <h3 id="testoTrasferimenti" class="hiddenInformation"> Trasferimenti recenti</h3>
+            <h3 id="textTransferMoney" class="hiddenInformation"> Money transfers</h3>
             <table class="hiddenInformation">
                 <tr>
                     <th>Utente</th>
@@ -43,13 +43,13 @@
 
 </html>
 <script>
-    var controllo= false;
+    var control= false;
     window.onload(login());
     function login(){
 
-        while(controllo== false){
-            var utente =window.prompt("inserire conto bancario: ");
-            if(utente.length!= 20){
+        while(control== false){
+            var user =window.prompt("Enter Bank Account: ");
+            if(user.length!= 20){
                 alert("Error! ")
                 login();
             }
@@ -65,7 +65,7 @@
 
                 re.lastIndex = 0; // be sure to reset the index after using .text()
             }
-            controllo = true;
+            control = true;
         }
 
     }
