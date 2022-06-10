@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/account', views.account_list),
     path('api/account/<str:id>', views.account_detail),
+    path('api/transfer', views.new_transfer),
 ]

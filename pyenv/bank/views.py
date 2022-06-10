@@ -91,3 +91,51 @@ def account_detail(request, id):
         response['X-Sistema-Bancario'] = account.name + ";" + account.surname
 
         return response
+
+
+@api_view(['POST'])
+def new_transfer(request):
+
+    if request.method == 'POST':
+        account_from_id = str(request.POST.get('account_from_id', False))
+        account_to_id = str(request.POST.get('account_to_id', False))
+
+        print("account_from_id: " + account_from_id)
+        print("account_to_id: " + account_to_id)
+
+        try:
+            account_from = Account.objects.get(pk=account_from_id)
+            account_to = Account.objects.get(pk=account_to_id)
+        except Account.DoesNotExist:
+            return Response({'Message': 'Account does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        amount = float(request.POST.get('amount', False))
+
+        if amount < 0:
+            return Response({'Message': 'Cannot perform negative transfer'}, status=status.HTTP_400_BAD_REQUEST)
+        elif amount > account_from.balance:
+            return Response({'Message': 'Not enough money'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            account_from_previus_balance = account_from.balance
+            account_from.balance = (account_from_previus_balance - amount)
+            account_from.save()
+
+            account_to_previus_balance = account_to.balance
+            account_to.balance = (account_to_previus_balance + amount)
+            account_to.save()
+
+            transaction = Transaction.objects.create(
+                account_from=account_from,
+                account_to=account_to,
+                amount=amount
+            )
+
+            transaction_serializer = TransactionSerializer(transaction)
+
+            response = {"transaction_id": transaction_serializer.data['id']}
+            response["account_from_id"] = ({"account_from_id": account_from.id,
+                                            "updated_balance": account_from.balance})
+            response["account_to_id"] = ({"account_to_id": account_to.id,
+                                          "updated_balance": account_to.balance})
+
+            return Response(response, status=status.HTTP_200_OK)
