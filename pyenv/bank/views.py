@@ -21,7 +21,7 @@ def account_list(request):
             return Response({"accountId": serializer.data['id']}, status=status.HTTP_201_CREATED)
 
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'POST', 'PUT', 'PATCH', 'HEAD'])
 def account_detail(request, id):
 
     try:
@@ -42,7 +42,7 @@ def account_detail(request, id):
 
         amount = float(request.POST.get('amount', False))
 
-        if amount < 0 and amount > account_from.balance:
+        if amount < 0 and abs(amount) > abs(account_from.balance):
             return Response({'Message': 'Not enough money'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             previus_balance = account_to.balance
@@ -55,7 +55,39 @@ def account_detail(request, id):
                 amount=amount
             )
             serializer = TransactionSerializer(self_transaction)
-            return Response(serializer.data)
+            return Response({"transaction_id": serializer.data['id'], "updated_balance": account_to.balance})
 
-    if request.method == 'DELETE':
-        pass
+    if request.method == 'PUT':
+        request_name = request.POST.get('name', False)
+        request_surname = request.POST.get('surname', False)
+
+        if request_name != False:
+            account.name = request_name
+
+        if request_surname != False:
+            account.surname = request_surname
+
+        account.save()
+
+        serializer = AccountSerializer(account)
+        return Response(serializer.data)
+
+    if request.method == 'PATCH':
+        request_name = request.POST.get('name', False)
+        request_surname = request.POST.get('surname', False)
+
+        if request_name != False:
+            account.name = request_name
+        else:
+            account.surname = request_surname
+
+        account.save()
+
+        serializer = AccountSerializer(account)
+        return Response(serializer.data)
+
+    if request.method == 'HEAD':
+        response = Response(status=status.HTTP_200_OK)
+        response['X-Sistema-Bancario'] = account.name + ";" + account.surname
+
+        return response
