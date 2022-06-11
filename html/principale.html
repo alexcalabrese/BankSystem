@@ -1,115 +1,86 @@
 <!DOCTYPE html>
 <html>
-    <head>
-            <title> HomePage </title>
-            <style>
-                table{
-                    font-family: Arial, sans-serif;
-                    border-collapse: collapse;
-                    width: 100%;
-                }
 
-                td,th{
-                    border: 2px solid #dddddddd;
-                    text-align: left;
-                    padding: 4px;
-
-                }
-                
-            </style>
-    
-    </head>
-    <body>
-        <h1> Bank </h1>
+<head>
+    <title> HomePage </title>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
         
-        <div id="infoAccount" style="display: visible">
-            <h3 id="textTransferMoney" class="hiddenInformation"> Money transfers</h3>
-            <table class="hiddenInformation">
-                <tr>
-                    <th> </th>
-                    <th>Destinatario o Mittente</th>
-                    <th>Saldo Operazione</th>
-                </tr>
-                
-                <tr>
-                    <th>h</th>
-                    <th>h</th>
-                    <th>h</th>
-                </tr>
-            </table>
-        </div>
-       
-    </body>
+        td,
+        th {
+            border: 2px solid #dddddddd;
+            text-align: left;
+            padding: 4px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1> Bank </h1>
+
+    <div id="infoAccount" style="display: visible">
+        <h3 id="textTransferMoney" class="hiddenInformation"> Money transfers</h3>
+        <table class="hiddenInformation">
+            <tr>
+                <th id="userTable"> </th>
+                <th>Destinatario o Mittente</th>
+                <th>Saldo Operazione</th>
+            </tr>
+
+            <tr>
+                <th>h</th>
+                <th>h</th>
+                <th>h</th>
+            </tr>
+        </table>
+    </div>
+
+</body>
 
 </html>
 <script>
-    var control= false;
-    window.onload(login());
-    function login(){
+    var control = false;
+    window.onload = login;
 
-        while(control== false){
-            var user =window.prompt("Enter Bank Account: ");
-            if(user.length!= 20){
-                alert("Error! ")
+    function login() {
+
+        while (control == false) {
+            var user = window.prompt("Enter Bank Account: ");
+            if (user.length != 20) {
+                alert("Error! leng")
                 login();
-            }
-            else{
+            } else {
                 let re = /[0-9A-Fa-f]{20}/g;
-                
-                if(re.test(utente)) {
-                
+
+                if (re.test(user)) {
+                    // let account = getAccount();
+                    console.log(getAccount());
                 } else {
                     alert('invalid bank account');
                     login();
                 }
 
-                re.lastIndex = 0; // be sure to reset the index after using .text()
+                re.lastIndex = 0;
             }
             control = true;
         }
-
-    }
-                                                
-    async function informationAccount(url = '', data = {}){
-      
-        const response = await fetch(url, {
-            method: 'POST', 
-            mode: 'cors',
-            cache: 'no-cache', 
-            credentials: 'same-origin', 
-            headers: {
-                ' Content-Type': 'application/json'
-     
-            },
-            redirect: 'follow', 
-            referrerPolicy: 'no-referrer',
-            body: JSON.stringify(data)
-        });
-        return response.json();
+        document.getElementById("userTable").innerHTML = user;
     }
 
-    postData('https://example.com/answer', { answer: 42 })
-        .then(data => {
-         console.log(data); 
-        });
- 
-   function successfulfetch(data){
-        fetch('flowers.jpg')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not OK');
-            }
-            return response.blob();
-        })
-        .then(myBlob => {
-            myImage.src = URL.createObjectURL(myBlob);
-         })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-        });
+    function getAccount() {
+        let url = 'https://api.agify.io/?name=alex'
+        fetch(url)
+            .then(response => response.json())
+            .then(account =>
+            //Qui popoleremo la tabella
+        console.log(account.age));
 
-   }
-   
-    
-
+        // console.log("Ciao");
+        // return account_age;
+    }
 </script>
