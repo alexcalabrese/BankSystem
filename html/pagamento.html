@@ -2,6 +2,20 @@
 <html>
     <head>
         <title>MoneyTransfer</title>
+        <style>
+            table {
+                font-family: Arial, sans-serif;
+                border-collapse: collapse;
+                width: 50%;
+            }
+            
+            td,
+            th {
+                border: 2px solid #dddddddd;
+                text-align: left;
+                padding: 4px;
+            }
+        </style>
     </head>
     <body>
         <h1> Bank</h1>
@@ -30,16 +44,42 @@
             <br>
             <br>
 
-        <form >
-         <label for="confirmedData"> Confirm Transfer:</label><br>
-         <input type="submit" id="confirmedData" name="confirmedData">     
+        <form>
+         <button onclick="transferAndShow()">Confirm here </button>     
           
         </form>
-        
+        <br>
+        <br>
+        <br>
+        <table id="statusTable" style="display: none;" >
+            <thead>
+                <tr>
+                    <td>User BankAccount</td>
+                    <td>Sender or Receiver BankAccount</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="userBankAccount"></td>
+                    <td id="SndRcvBankAccount"></td>
+                    <td id="statusTransfer"></td>
+                </tr>
+            </tbody>
+            
+        </table>
         
     </body>
 
 </html>
 <script>
+    document.getElementById("userBankAccount").innerHTML = userBankAccount;
+    document.getElementById("SndRcvBankAccount").innerHTML 
+    document.getElementById("statusTransfer").innerHTML 
 
+    function transferAndShow(){
+        document.getElementById(statusTable).style.display= "visible";
+
+    }
+   
 </script>
