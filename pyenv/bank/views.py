@@ -1,6 +1,7 @@
 from django.forms import ValidationError
 from django.http import JsonResponse
-from .models import Account, Transaction
+from .models.account import Account
+from .models.transaction import Transaction
 from .serializers import AccountSerializer, TransactionSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
