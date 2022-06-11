@@ -23,22 +23,40 @@
 <body>
     <h1> Bank </h1>
 
-    <div id="infoAccount" style="display: visible">
         <h3 id="textTransferMoney" class="hiddenInformation"> Money transfers</h3>
         <table class="hiddenInformation">
-            <tr>
-                <th id="userTable"> </th>
-                <th>Destinatario o Mittente</th>
-                <th>Saldo Operazione</th>
-            </tr>
-
-            <tr>
-                <th>h</th>
-                <th>h</th>
-                <th>h</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th><h5 style="text-align: center;">User bank account</h5> </th>
+                    <th><h5 style="text-align: center;">Sender or Receiver</h5></th>
+                    <th><h5 style="text-align: center;">Money Transfered</h5></th>
+                </tr>
+               
+            </thead>
+            <tbody>
+            </tbody>
+            <script>
+                const tableAPI = 'https://api.agify.io/?name=alex';
+                const tableBody = document.querySelector('tbody');
+                fetch(tableAPI)
+                .then((response) => response.json())
+                .then((todos) => {
+                   const stringFiedTodos = todos.reduce((itemToRenderInTable, todo, index) => {
+                       return (
+                           itemToRenderInTable +  <tr>
+                    <td> ${index + 1}</td>
+                    <td>${todo.title}</td>
+                </tr>
+                
+                        
+                       );
+                }, '');
+                tableBody.innerHTML = stringFiedTodos
+            })
+                .catch(console.error);
+            </script>
+            
         </table>
-    </div>
 
 </body>
 
@@ -72,15 +90,16 @@
         document.getElementById("userTable").innerHTML = user;
     }
 
-    function getAccount() {
-        let url = 'https://api.agify.io/?name=alex'
-        fetch(url)
-            .then(response => response.json())
-            .then(account =>
-            //Qui popoleremo la tabella
-        console.log(account.age));
-
-        // console.log("Ciao");
-        // return account_age;
-    }
+    // function getAccount() {
+    //     let url = 'https://api.agify.io/?name=alex'
+    //     fetch(url)
+    //         .then(response => response.json())
+    //         .then(account =>
+    //         //Qui popoleremo la tabella
+    //     console.log(account.age));
+            
+    //     // console.log("Ciao");
+    //     // return account_age;
+    // }
+    // //cccccccccccccccccccc
 </script>
