@@ -1,6 +1,6 @@
 from django.db import models
 from ..utils import create_random_string_id
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 
 
 class Account(models.Model):
@@ -20,8 +20,13 @@ class Account(models.Model):
 
     def withdrawal(self, amount):
         previus_balance = self.balance
-        self.balance = previus_balance - amount
-        self.save()
+        if (previus_balance - amount) >= 0:
+            self.balance = previus_balance - amount
+            self.save()
+        else:
+            raise ValidationError(
+                {'message': 'Error 400, not enough money',
+                 'current_balance: ': self.balance})
 
 
 def get_account_if_exist(id):
