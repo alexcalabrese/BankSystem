@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from .models.account import Account, get_account_if_exist
 from .utils import validate_float_field
-from .models.transaction import Transaction
+from .models.transaction import Transaction, get_transaction_if_exist
 from .serializers import AccountSerializer, TransactionSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -73,33 +73,30 @@ def account_detail(request, id):
     # Expected body parameters:
     #   - amount
     if request.method == 'POST':
+        amount = request.POST.get('amount', False)
 
         # It's a Self Deposit or Withdraw
         account_from = found_account
         account_to = found_account
 
-        amount = validate_float_field(
-            request.POST.get('amount', False), "amount")
+        new_transaction = TransactionSerializer(
+            data={
+                'account_from': account_from.id,
+                'account_to': account_to.id,
+                'amount': amount
+            })
 
-        if(amount == False):
-            raise ValidationError({"message": "Error 400, amount is required"})
+        if new_transaction.is_valid(raise_exception=True):
+            amount = new_transaction.validated_data.get('amount')
 
-        if amount < 0 and abs(amount) > abs(account_from.balance):
-            raise ValidationError({"message": "Error 400, not enough money"})
-        else:
-            previus_balance = account_to.balance
-            account_to.balance = (previus_balance + amount)
-            account_to.save()
+            if amount >= 0:
+                account_to.deposit(abs(amount))
+            else:
+                account_to.withdrawal(abs(amount))
+            new_transaction.save()
 
-            self_transaction = Transaction.objects.create(
-                account_from=account_from,
-                account_to=account_to,
-                amount=amount
-            )
-            transaction_serializer = TransactionSerializer(self_transaction)
-
-            return Response({"transaction_id": transaction_serializer.data['id'],
-                             "updated_balance": account_to.balance})
+        return Response({"transaction_id": new_transaction.data['id'],
+                         "updated_balance": account_to.balance})
 
     # Overwrite "name" and "surname"
     # Expected body parameters:
@@ -191,12 +188,7 @@ def new_divert(request):
     #   - transaction_id
     if request.method == 'POST':
         transaction_id = request.POST.get('transaction_id', False)
-
-        try:
-            transaction = Transaction.objects.get(pk=transaction_id)
-        except Exception:
-            raise NotFound(
-                {'message': 'Error 404, transaction not found'})
+        transaction = get_transaction_if_exist(transaction_id)
 
         try:
             transaction_account_from = Account.objects.get(
@@ -206,17 +198,17 @@ def new_divert(request):
         except Account.DoesNotExist:
             return Response({'message': 'Error 404, one of two account no longer exist'}, status=status.HTTP_404_NOT_FOUND)
 
-        amount_to_revert = transaction.amount
-        difference_between_amounts = transaction_account_to.balance - amount_to_revert
+        amount_to_divert = transaction.amount
+        difference_between_amounts = transaction_account_to.balance - amount_to_divert
 
         if difference_between_amounts >= 0:
-            transaction_account_from.deposit(amount_to_revert)
-            transaction_account_to.withdrawal(amount_to_revert)
+            transaction_account_from.deposit(amount_to_divert)
+            transaction_account_to.withdrawal(amount_to_divert)
 
             new_transaction = Transaction.objects.create(
                 account_from=transaction_account_to,
                 account_to=transaction_account_from,
-                amount=-amount_to_revert
+                amount=-amount_to_divert
             )
 
             new_transaction_serializer = TransactionSerializer(new_transaction)
