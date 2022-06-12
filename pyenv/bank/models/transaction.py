@@ -8,9 +8,9 @@ class Transaction(models.Model):
     id = models.UUIDField(default=uuid.uuid4,
                           primary_key=True, editable=False, unique=True)
     account_from = models.ForeignKey(
-        Account, related_name='account_from', null=True, on_delete=models.CASCADE)
+        Account, related_name='account_from', null=True, on_delete=models.PROTECT)
     account_to = models.ForeignKey(
-        Account, related_name='account_to', null=True, on_delete=models.CASCADE)
+        Account, related_name='account_to', null=True, on_delete=models.PROTECT)
     amount = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
@@ -22,6 +22,6 @@ class Transaction(models.Model):
 def get_transaction_if_exist(id):
     try:
         transaction = Transaction.objects.get(pk=id)
-        return transaction
-    except Transaction.DoesNotExist:
+    except Exception:
         raise NotFound({"message": "Error 404, transaction not found"})
+    return transaction
