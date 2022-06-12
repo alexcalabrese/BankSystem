@@ -1,3 +1,4 @@
 pyenv/.venv
 .DS_Store
 old/.DS_Store
+pyenv/db.sqlite3
