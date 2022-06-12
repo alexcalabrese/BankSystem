@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from .account import Account
+from rest_framework.exceptions import NotFound
 
 
 class Transaction(models.Model):
@@ -16,3 +17,11 @@ class Transaction(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+def get_transaction_if_exist(id):
+    try:
+        transaction = Transaction.objects.get(pk=id)
+        return transaction
+    except Transaction.DoesNotExist:
+        raise NotFound({"message": "Error 404, transaction not found"})
