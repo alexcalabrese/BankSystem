@@ -183,20 +183,20 @@ def new_transfer(request):
 @api_view(['POST'])
 def new_divert(request):
 
-    # Revert a transaction using "transaction_id" parameter
+    # Divert a transaction using "transaction_id" parameter
     # Expected body parameters:
     #   - transaction_id
     if request.method == 'POST':
         transaction_id = request.POST.get('transaction_id', False)
         transaction = get_transaction_if_exist(transaction_id)
 
-        try:
+        if transaction.account_from is None or transaction.account_to is None:
+            return Response({'message': 'Error 404, one of two accounts no longer exist'}, status=status.HTTP_404_NOT_FOUND)
+        else:
             transaction_account_from = Account.objects.get(
                 pk=transaction.account_from.id)
             transaction_account_to = Account.objects.get(
                 pk=transaction.account_to.id)
-        except Account.DoesNotExist:
-            return Response({'message': 'Error 404, one of two account no longer exist'}, status=status.HTTP_404_NOT_FOUND)
 
         amount_to_divert = transaction.amount
         difference_between_amounts = transaction_account_to.balance - amount_to_divert
