@@ -48,7 +48,8 @@ class TransactionSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     transactions = TransactionSerializer(
         source='account_from',
-        many=True)
+        many=True,
+        required=False)
 
     class Meta:
         model = Account
