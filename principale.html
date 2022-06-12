@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title> HomePage </title>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        td,
+        th {
+            border: 2px solid #dddddddd;
+            text-align: left;
+            padding: 4px;
+        }
+    </style>
+
+</head>
+
+<body>
+    
+    <button id="newUser" onclick="reloadpage()"> Insert another user</button>
+    <button id="transferButton" onclick="gotoTranfer()"> Go to TransferMoney</button>
+    <br>
+    <h1> Bank </h1>
+    
+    <div>
+        <form   autocomplete="off">
+        <label for="userBankAccount"> Enter Bank Account Receiver:</label> <br>
+        <input type="text" id="userBankAccount" name="userBankAccount" > <br>
+
+        <button id="cnfButton" onclick="login()">submit</button>
+    </div id="infohomepage" style="display: none;"> <br> <br>
+        <h3 id="userName"> Name: </h3><br>
+        <h3 id="userSurname"></h3>Surname: <br>
+        <h3 id="accountBalance"></h3>Balance: <br>
+        <table >
+            <thead>
+                <tr>
+                    <th><h5 style="text-align: center;">id transaction</h5> </th>
+                    <th><h5 style="text-align: center;">Sender or Receiver</h5></th>
+                    <th><h5 style="text-align: center;">Money Transfered</h5></th>
+                </tr>
+               
+            </thead>
+            <tbody>
+            </tbody>
+            
+        </table>
+
+</body>
+
+</html>
+<script src="script.js"></script>
