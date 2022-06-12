@@ -43,11 +43,12 @@
                 .then((todos) => {
                    const stringFiedTodos = todos.reduce((itemToRenderInTable, todo, index) => {
                        return (
-                           itemToRenderInTable +  <tr>
+                           itemToRenderInTable +  `<tr>
                     <td> ${index + 1}</td>
                     <td>${todo.title}</td>
+                    
                 </tr>
-                
+                `
                         
                        );
                 }, '');
