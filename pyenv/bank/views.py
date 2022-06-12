@@ -16,7 +16,7 @@ def set_name_surname_header(response, serializer):
     return True
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def account_list(request):
 
     # Return all accounts
@@ -38,6 +38,18 @@ def account_list(request):
             return Response(new_account_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response({'message': new_account_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete an account
+    # Expected body parameters:
+    #   - id
+    if request.method == 'DELETE':
+        account_id = request.GET.get('id', False)
+        found_account = get_account_if_exist(account_id)
+
+        if found_account.delete():
+            return Response({'message': "Account deleted with success"}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'message': "Error 400, something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'HEAD'])
