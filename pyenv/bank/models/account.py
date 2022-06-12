@@ -1,6 +1,6 @@
 from django.db import models
 from ..utils import create_random_string_id
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 
 
 class Account(models.Model):
