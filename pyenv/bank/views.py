@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, ParseError, NotFound
+from django.shortcuts import render
 
 
 def set_name_surname_header(response, serializer):
@@ -14,6 +15,9 @@ def set_name_surname_header(response, serializer):
         ";" + str(serializer['surname'].value)
 
     return True
+
+def render_home(request):
+    return render(request, "homepage.html")
 
 
 @api_view(['GET', 'POST', 'DELETE'])
