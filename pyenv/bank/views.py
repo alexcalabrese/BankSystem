@@ -24,7 +24,9 @@ def account_list(request):
     if request.method == 'GET':
         accounts = Account.objects.all()
         account_serializer = AccountSerializer(accounts, many=True)
-        return JsonResponse(account_serializer.data, safe=False)
+        response = JsonResponse(account_serializer.data, safe=False)
+        response["Access-Control-Allow-Origin"] = "*"
+        return response
 
     # Create new account
     # Return id of created account
@@ -63,6 +65,7 @@ def account_detail(request, id):
     if request.method == 'GET':
         account_serializer = AccountSerializer(found_account)
         response = JsonResponse(account_serializer.data, safe=False)
+        response["Access-Control-Allow-Origin"] = "*"
         set_name_surname_header(response, account_serializer)
 
         return response
