@@ -16,8 +16,13 @@ def set_name_surname_header(response, serializer):
 
     return True
 
+
 def render_home(request):
     return render(request, "homepage.html")
+
+
+def render_transfer(request):
+    return render(request, "transfer.html")
 
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -164,11 +169,12 @@ def new_transfer(request):
     #   - account_to_id
     #   - amount
     if request.method == 'POST':
+        print(request.data.get('account_from', False))
 
         account_from = get_account_if_exist(
-            request.POST.get('account_from', False))
+            request.data.get('account_from', False))
         account_to = get_account_if_exist(
-            request.POST.get('account_to', False))
+            request.data.get('account_to', False))
 
         new_transaction = TransactionSerializer(data=request.data)
 
@@ -183,6 +189,7 @@ def new_transfer(request):
                                      "updated_balance": account_from.balance})
         response["account_to"] = ({"account_to_id": account_to.id,
                                    "updated_balance": account_to.balance})
+        # response["Access-Control-Allow-Origin"] = "*"
 
         return Response(response)
 
