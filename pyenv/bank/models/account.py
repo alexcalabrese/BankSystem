@@ -26,7 +26,7 @@ class Account(models.Model):
         else:
             raise ValidationError(
                 {'message': 'Error 400, not enough money',
-                 'current_balance: ': self.balance})
+                 'current_balance': self.balance})
 
 
 def get_account_if_exist(id):
