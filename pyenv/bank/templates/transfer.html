@@ -23,11 +23,6 @@
   <!-- Load Vue followed by BootstrapVue -->
   <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
   <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
-  {% comment %}
-  <script type="text/javascript">
-    window.CSRF_TOKEN = "{{ csrf_token }}";
-  </script>
-  {% endcomment %}
 </head>
 
 <div id="app">
@@ -51,57 +46,56 @@
   </div>
   <b-container class="m-3" fluid>
     <b-row class="my-1">
-      <b-col sm="5">
+      <b-col sm="8">
         <h2>New Transaction</h2>
+        <b-form v-on:submit.prevent="sendTransaction">
+          <b-form-group label="From:" label-cols-sm="3" label-align-sm="right">
+            <b-form-input
+              v-model="transaction.account_from"
+              placeholder="Enter sender id"
+              :state="validateFields.account_from"
+              required
+            ></b-form-input>
+          </b-form-group>
 
-        <b-form-group
-          label="From:"
-          label-for="nested-city"
-          label-cols-sm="3"
-          label-align-sm="right"
-        >
-          <b-form-input v-model="transaction.account_from"></b-form-input>
-        </b-form-group>
+          <b-form-group label="To:" label-cols-sm="3" label-align-sm="right">
+            <b-form-input
+              v-model="transaction.account_to"
+              placeholder="Enter receiver id"
+              :state="validateFields.account_to"
+              required
+            ></b-form-input>
+          </b-form-group>
 
-        <b-form-group
-          label="To:"
-          label-for="nested-city"
-          label-cols-sm="3"
-          label-align-sm="right"
-        >
-          <b-form-input v-model="transaction.account_to"></b-form-input>
-        </b-form-group>
+          <b-form-group
+            label="Amount:"
+            label-cols-sm="3"
+            label-align-sm="right"
+          >
+            <b-form-input
+              type="number"
+              v-model="transaction.amount"
+              placeholder="Enter amount"
+              required
+            ></b-form-input>
+          </b-form-group>
 
-        <b-form-group
-          label="Amount:"
-          label-for="nested-city"
-          label-cols-sm="3"
-          label-align-sm="right"
-        >
-          <b-form-input v-model="transaction.amount"></b-form-input>
-        </b-form-group>
-        <!-- This will only be shown if the preceding input has an invalid state -->
-        <b-form-invalid-feedback id="input-live-feedback">
-          Account id is not valid
-        </b-form-invalid-feedback>
-        <b-alert class="mt-3" variant="success" :show="transactionSuccess"
-          >Transaction created with success!</b-alert
-        >
-        <b-alert class="mt-3" variant="danger" :show="transactionError.show">
-          {{ transactionError.message }}
-          <br />
-          {{ transactionError.current_balance != null ?
-          transactionError.current_balance : "" }}
-        </b-alert>
-        <b-button
-          class="mt-2"
-          @click="sendTransaction()"
-          variant="outline-primary"
-          >Send</b-button
-        >
+          <b-alert class="mt-3" variant="success" :show="transactionSuccess"
+            >Transaction created with success!</b-alert
+          >
+          <b-alert class="mt-3" variant="danger" :show="transactionError.show">
+            {{ transactionError.message != null ? transactionError.message : ""
+            }}
+            <br />
+            {{ transactionError.current_balance != null ?
+            transactionError.current_balance : "" }}
+          </b-alert>
+          <b-button class="mt-2" type="submit" variant="outline-primary"
+            >Send</b-button
+          >
+        </b-form>
       </b-col>
     </b-row>
-    <!-- <hr class="solid" /> -->
   </b-container>
 </div>
 
@@ -138,60 +132,79 @@
           message: null,
           current_balance: null,
         },
+        validateFields: {
+          account_from: null,
+          account_to: null,
+        },
       };
     },
     methods: {
+      validateTransaction(transaction) {
+        let regex = /[0-9A-Fa-f]{20}/g;
+
+        let account_from_test = regex.test(transaction.account_from);
+        regex.lastIndex = 0;
+
+        let account_to_test = regex.test(transaction.account_to);
+        regex.lastIndex = 0;
+
+        this.validateFields.account_from = account_from_test;
+        this.validateFields.account_to = account_to_test;
+
+        if (account_from_test && account_to_test) return true;
+        else return false;
+      },
       sendTransaction() {
-        console.log(JSON.stringify(this.transaction));
-        // if (this.validateId(this.accountId)) {
         let url = "http://127.0.0.1:8000/api/transfer";
-        fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken,
-          },
-          body: JSON.stringify(this.transaction),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              // throw Error(response.statusText);
-              return Promise.reject(response);
-            }
-            return response.json();
+
+        if (this.validateTransaction(this.transaction)) {
+          fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify(this.transaction),
           })
-          .then((data) => {
-            console.log("Success:", data);
-            this.transactionSuccess = true;
-          })
-          .catch((error) => {
-            // console.error(error);
-            error.json().then((json) => {
-              console.log(json.hasOwnProperty("current_balance"));
-              this.transactionError.message = json.message;
-              if (json.hasOwnProperty("current_balance")) {
-                this.transactionError.current_balance =
-                  "Sender balance: " + json.current_balance;
+            .then((response) => {
+              if (!response.ok) {
+                return Promise.reject(response);
+              } else {
+                return response.json();
               }
-              this.transactionError.show = true;
+            })
+            .then((data) => {
+              this.transactionSuccess = true;
+              setTimeout(() => {
+                this.transactionSuccess = false;
+              }, 2500);
+            })
+            .catch((error) => {
+              error.json().then((json) => {
+                if (Array.isArray(json.message)) {
+                  this.transactionError.message = json.message.at(0);
+
+                  if (json.hasOwnProperty("current_balance")) {
+                    this.transactionError.current_balance =
+                      "Sender balance: " + json.current_balance.at(0);
+                  }
+                } else {
+                  this.transactionError.message = json.message;
+                  this.transactionError.current_balance = null;
+                }
+                this.transactionError.show = true;
+                setTimeout(() => {
+                  this.transactionError.show = false;
+                }, 4000);
+              });
             });
-          });
+        }
       },
       isObject(o) {
         return (
           o !== null && typeof o === "object" && Array.isArray(o) === false
         );
       },
-    },
-    validateId(accountId) {
-      let re = /[0-9A-Fa-f]{20}/g;
-      if (accountId.length == 20 && re.test(accountId)) {
-        this.inputState = true;
-        return true;
-      } else {
-        this.inputState = false;
-        return false;
-      }
     },
   }).$mount("#app");
 </script>
