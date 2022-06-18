@@ -169,8 +169,6 @@ def new_transfer(request):
     #   - account_to_id
     #   - amount
     if request.method == 'POST':
-        print(request.data.get('account_from', False))
-
         account_from = get_account_if_exist(
             request.data.get('account_from', False))
         account_to = get_account_if_exist(
