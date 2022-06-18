@@ -40,8 +40,8 @@ class TransactionSerializer(serializers.ModelSerializer):
                     {'message': 'Error 400, cannot perform negative transfer'})
             if abs(amount) >= abs(account_from.balance):
                 raise serializers.ValidationError(
-                    {'message': 'Error 400, not enough money',
-                        'current_balance: ': account_from.balance})
+                    {"message": 'Error 400, not enough money',
+                        "current_balance": account_from.balance})
         return data
 
 
