@@ -169,15 +169,26 @@ def new_transfer(request):
     #   - account_to_id
     #   - amount
     if request.method == 'POST':
-        account_from = get_account_if_exist(
-            request.data.get('account_from', False))
-        account_to = get_account_if_exist(
-            request.data.get('account_to', False))
+        request_account_from = request.data.get('account_from', False)
+        request_account_to = request.data.get('account_to', False)
+
+        if request_account_from == request_account_to:
+            account_from = get_account_if_exist(request_account_from)
+            account_to = account_from
+        else:
+            account_from = get_account_if_exist(request_account_from)
+            account_to = get_account_if_exist(
+                request_account_to)
 
         new_transaction = TransactionSerializer(data=request.data)
 
         if new_transaction.is_valid(raise_exception=True):
             amount = new_transaction.validated_data.get('amount')
+
+            if amount < 0:
+                raise ValidationError(
+                    {'message': 'Error 400, cannot perform negative transfer'})
+
             account_from.withdrawal(amount)
             account_to.deposit(amount)
             new_transaction.save()
