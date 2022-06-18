@@ -21,7 +21,7 @@ class Account(models.Model):
     def withdrawal(self, amount):
         previus_balance = self.balance
         if (previus_balance - amount) >= 0:
-            self.balance = previus_balance - amount
+            self.balance = (previus_balance - amount)
             self.save()
         else:
             raise ValidationError(

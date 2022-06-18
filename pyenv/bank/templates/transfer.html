@@ -97,10 +97,19 @@
       </b-col>
     </b-row>
     <hr class="solid" />
+    <div v-if="
+      transactionsCrated.length
+    >
+      0">
+    <h3>Transactions Created
     <b-table
+      class="mt-2"
+      label-sort-asc=""
+      label-sort-desc=""
+      label-sort-clear=""
       striped
       hover
-      v-if="transactionsCrated.length > 0"
+      
       :items="transactionsCrated"
       :fields="transactionsCreatedFields"
     >
@@ -111,13 +120,13 @@
         Updated balance: {{ rowFrom.item.account_from[0].updated_balance }}
       </template>
 
-
-
-      <template #cell(account_to)="rowTo"> Account id: {{ rowTo.item.account_to[0].account_to_id }} <br />
-        Updated balance: {{ rowTo.item.account_to[0].updated_balance }} </template>
-        {% endverbatim %} 
-    
-      </b-table>
+      <template #cell(account_to)="rowTo">
+        Account id: {{ rowTo.item.account_to[0].account_to_id }} <br />
+        Updated balance: {{ rowTo.item.account_to[0].updated_balance }}
+      </template>
+      {% endverbatim %}
+    </b-table>
+        </div>
   </b-container>
 </div>
 
@@ -154,14 +163,17 @@
           {
             key: "transaction_id",
             label: "Transaction id",
+            sortable: true,
           },
           {
             key: "account_from",
             label: "Account from",
+            sortable: true,
           },
           {
             key: "account_to",
             label: "Account to",
+            sortable: true,
           },
         ],
 
