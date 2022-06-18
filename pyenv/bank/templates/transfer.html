@@ -96,6 +96,28 @@
         </b-form>
       </b-col>
     </b-row>
+    <hr class="solid" />
+    <b-table
+      striped
+      hover
+      v-if="transactionsCrated.length > 0"
+      :items="transactionsCrated"
+      :fields="transactionsCreatedFields"
+    >
+      {% verbatim %}
+      <template #cell(account_from)="rowFrom">
+        Account id: {{ rowFrom.item.account_from[0].account_from_id }}
+        <br />
+        Updated balance: {{ rowFrom.item.account_from[0].updated_balance }}
+      </template>
+
+
+
+      <template #cell(account_to)="rowTo"> Account id: {{ rowTo.item.account_to[0].account_to_id }} <br />
+        Updated balance: {{ rowTo.item.account_to[0].updated_balance }} </template>
+        {% endverbatim %} 
+    
+      </b-table>
   </b-container>
 </div>
 
@@ -127,6 +149,22 @@
           amount: null,
         },
         transactionSuccess: false,
+        transactionsCrated: [],
+        transactionsCreatedFields: [
+          {
+            key: "transaction_id",
+            label: "Transaction id",
+          },
+          {
+            key: "account_from",
+            label: "Account from",
+          },
+          {
+            key: "account_to",
+            label: "Account to",
+          },
+        ],
+
         transactionError: {
           show: false,
           message: null,
@@ -175,9 +213,15 @@
             })
             .then((data) => {
               this.transactionSuccess = true;
+              this.transactionsCrated.push({
+                transaction_id: data.transaction_id,
+                account_from: [data.account_from],
+                account_to: [data.account_to],
+              });
+              console.log(this.transactionsCrated);
               setTimeout(() => {
                 this.transactionSuccess = false;
-              }, 2500);
+              }, 3000);
             })
             .catch((error) => {
               error.json().then((json) => {
