@@ -32,10 +32,9 @@ def account_list(request):
     # Return all accounts
     # Expected body parameters: none
     if request.method == 'GET':
-        accounts = Account.objects.all()
+        accounts = Account.objects.filter(is_active=1)
         account_serializer = AccountSerializer(accounts, many=True)
         response = JsonResponse(account_serializer.data, safe=False)
-        response["Access-Control-Allow-Origin"] = "*"
         return response
 
     # Create new account
@@ -55,13 +54,13 @@ def account_list(request):
     # Expected body parameters:
     #   - id
     if request.method == 'DELETE':
-        account_id = request.GET.get('id', False)
+        account_id = request.data.get('id', False)
         found_account = get_account_if_exist(account_id)
 
-        if found_account.delete():
-            return Response({'message': "Account deleted with success"}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response({'message': "Error 400, something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+        found_account.is_active = 0
+        found_account.save()
+
+        return Response({'message': "Account deleted with success"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'HEAD'])
@@ -75,7 +74,6 @@ def account_detail(request, id):
     if request.method == 'GET':
         account_serializer = AccountSerializer(found_account)
         response = JsonResponse(account_serializer.data, safe=False)
-        response["Access-Control-Allow-Origin"] = "*"
         set_name_surname_header(response, account_serializer)
 
         return response
@@ -86,7 +84,7 @@ def account_detail(request, id):
     # Expected body parameters:
     #   - amount
     if request.method == 'POST':
-        amount = request.POST.get('amount', False)
+        amount = request.data.get('amount', False)
 
         # It's a Self Deposit or Withdraw
         account = found_account
@@ -114,8 +112,8 @@ def account_detail(request, id):
     #   - name
     #   - surname
     if request.method == 'PUT':
-        request_name = request.POST.get('name', False)
-        request_surname = request.POST.get('surname', False)
+        request_name = request.data.get('name', False)
+        request_surname = request.data.get('surname', False)
 
         if request_name != False and request_surname != False:
             found_account.name = str(request_name)
@@ -132,8 +130,8 @@ def account_detail(request, id):
     # Expected body parameters:
     #   - only one between name and surname
     if request.method == 'PATCH':
-        request_name = request.POST.get('name', False)
-        request_surname = request.POST.get('surname', False)
+        request_name = request.data.get('name', False)
+        request_surname = request.data.get('surname', False)
 
         if request_name != False:
             found_account.name = str(request_name)
@@ -197,7 +195,6 @@ def new_transfer(request):
                                      "updated_balance": account_from.balance})
         response["account_to"] = ({"account_to_id": account_to.id,
                                    "updated_balance": account_to.balance})
-        # response["Access-Control-Allow-Origin"] = "*"
 
         return Response(response)
 
@@ -212,13 +209,13 @@ def new_divert(request):
         transaction_id = request.data.get('transaction_id', False)
         transaction = get_transaction_if_exist(transaction_id)
 
-        if transaction.account_from is None or transaction.account_to is None:
+        if transaction.account_from.is_active == 0 or transaction.account_to.is_active == 0:
             return Response({'message': 'Error 404, one of two accounts no longer exist'}, status=status.HTTP_404_NOT_FOUND)
         else:
-            transaction_account_from = Account.objects.get(
-                pk=transaction.account_from.id)
-            transaction_account_to = Account.objects.get(
-                pk=transaction.account_to.id)
+            transaction_account_from = get_account_if_exist(
+                transaction.account_from.id)
+            transaction_account_to = get_account_if_exist(
+                transaction.account_to.id)
 
         amount_to_divert = transaction.amount
         difference_between_amounts = transaction_account_to.balance - amount_to_divert
