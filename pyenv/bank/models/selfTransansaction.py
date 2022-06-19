@@ -19,7 +19,7 @@ class SelfTransaction(models.Model):
 
 def get_self_transaction_if_exist(id):
     try:
-        self_transaction = SelfTransansaction.objects.get(pk=id)
+        self_transaction = SelfTransaction.objects.get(pk=id)
     except Exception:
         raise NotFound({"message": "Error 404, transaction not found"})
     return self_transaction
