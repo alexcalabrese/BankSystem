@@ -63,6 +63,14 @@
           <b-button class="mt-3" type="submit" variant="outline-primary"
             >Search</b-button
           >
+          <b-alert class="mt-3" variant="success" :show="accountFound"
+            >Account found with success!</b-alert
+          >
+          {% verbatim %}
+          <b-alert class="mt-3" variant="danger" :show="accountNotFound.show">
+            {{ accountNotFound.message != null ? accountNotFound.message : "" }}
+          </b-alert>
+          {% endverbatim %}
         </b-form>
       </b-col>
       <b-table
@@ -181,6 +189,11 @@
     data() {
       return {
         inputState: null,
+        accountFound: false,
+        accountNotFound: {
+          message: "",
+          show: false,
+        },
         accountId: null,
         accounts: null,
         showFirstTable: false,
@@ -236,11 +249,33 @@
           this.showFirstTable = true;
           let url = "http://127.0.0.1:8000/api/account/" + this.accountId;
           fetch(url)
-            .then((response) => response.json())
+            .then((response) => {
+              if (!response.ok) {
+                return Promise.reject(response);
+              } else {
+                return response.json();
+              }
+            })
             .then((account) => {
-              console.log(account);
+              this.accountFound = true;
+              setTimeout(() => {
+                this.accountFound = false;
+              }, 3000);
               this.singleAccount.shift();
               this.singleAccount.push(account);
+            })
+            .catch((error) => {
+              error.json().then((json) => {
+                if (Array.isArray(json.message)) {
+                  this.accountNotFound.message = json.message.at(0);
+                } else {
+                  this.accountNotFound.message = json.message;
+                }
+                this.accountNotFound.show = true;
+                setTimeout(() => {
+                  this.accountNotFound.show = false;
+                }, 4000);
+              });
             });
         }
       },
