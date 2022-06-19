@@ -9,6 +9,7 @@ class Account(models.Model):
     name = models.CharField(max_length=50, unique=False)
     surname = models.CharField(max_length=50, unique=False)
     balance = models.FloatField(default=0)
+    is_active = models.BooleanField(default=1)
 
     def __str__(self):
         return self.name + " " + self.surname
@@ -31,7 +32,7 @@ class Account(models.Model):
 
 def get_account_if_exist(id):
     try:
-        account = Account.objects.get(pk=id)
+        account = Account.objects.get(pk=id, is_active=1)
         return account
     except Account.DoesNotExist:
         raise NotFound({"message": "Error 404, account not found"})
