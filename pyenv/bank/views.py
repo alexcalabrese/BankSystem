@@ -2,7 +2,8 @@ from django.http import JsonResponse
 from .models.account import Account, get_account_if_exist
 from .utils import validate_float_field
 from .models.transaction import Transaction, get_transaction_if_exist
-from .serializers import AccountSerializer, TransactionSerializer
+from .models.selfTransansaction import SelfTransaction
+from .serializers import AccountSerializer, TransactionSerializer, SelfTransactionSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -88,13 +89,11 @@ def account_detail(request, id):
         amount = request.POST.get('amount', False)
 
         # It's a Self Deposit or Withdraw
-        account_from = found_account
-        account_to = found_account
+        account = found_account
 
-        new_transaction = TransactionSerializer(
+        new_transaction = SelfTransactionSerializer(
             data={
-                'account_from': account_from.id,
-                'account_to': account_to.id,
+                'account': account.id,
                 'amount': amount
             })
 
@@ -102,13 +101,13 @@ def account_detail(request, id):
             amount = new_transaction.validated_data.get('amount')
 
             if amount >= 0:
-                account_to.deposit(abs(amount))
+                account.deposit(abs(amount))
             else:
-                account_to.withdrawal(abs(amount))
+                account.withdrawal(abs(amount))
             new_transaction.save()
 
         return Response({"transaction_id": new_transaction.data['id'],
-                         "updated_balance": account_to.balance})
+                         "updated_balance": account.balance})
 
     # Overwrite "name" and "surname"
     # Expected body parameters:

@@ -3,6 +3,35 @@ from rest_framework import serializers
 from bank.utils import validate_float_field
 from .models.account import Account
 from .models.transaction import Transaction
+from .models.selfTransansaction import SelfTransaction
+
+
+class SelfTransactionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SelfTransaction
+        fields = ['id',
+                  'account',
+                  'amount']
+
+    def validate(self, data):
+        if data.get('account') is None:
+            raise serializers.ValidationError(
+                {"message": "Error 400, account account is required"})
+
+        try:
+            account = data.get('account')
+        except serializers.NotFound:
+            raise serializers.NotFound(
+                {"message": "Error 404, account not found"})
+
+        amount = validate_float_field(data.get('amount'), "amount")
+
+        if abs(amount) >= abs(account.balance):
+            raise serializers.ValidationError(
+                {"message": 'Error 400, not enough money',
+                    "current_balance": account.balance})
+        return data
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -50,6 +79,10 @@ class AccountSerializer(serializers.ModelSerializer):
         source='account_from',
         many=True,
         required=False)
+    self_transactions = SelfTransactionSerializer(
+        source='account',
+        many=True,
+        required=False)
 
     class Meta:
         model = Account
@@ -57,7 +90,8 @@ class AccountSerializer(serializers.ModelSerializer):
                   'name',
                   'surname',
                   'balance',
-                  'transactions']
+                  'transactions',
+                  'self_transactions']
 
     def validate_name(self, name):
         if name is None:
