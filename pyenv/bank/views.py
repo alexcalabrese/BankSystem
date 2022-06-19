@@ -209,7 +209,7 @@ def new_divert(request):
     # Expected body parameters:
     #   - transaction_id
     if request.method == 'POST':
-        transaction_id = request.POST.get('transaction_id', False)
+        transaction_id = request.data.get('transaction_id', False)
         transaction = get_transaction_if_exist(transaction_id)
 
         if transaction.account_from is None or transaction.account_to is None:
