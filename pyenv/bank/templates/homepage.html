@@ -64,6 +64,9 @@
         >
       </b-col>
       <b-table
+        label-sort-asc=""
+        label-sort-desc=""
+        label-sort-clear=""
         striped
         hover
         class="m-3"
@@ -73,24 +76,38 @@
       >
         <template #cell(transactions)="row">
           <div v-if="row.item.transactions.length > 0">
-            <b-button @click="row.toggleDetails()">Details</b-button>
+            <b-button
+              v-b-modal.account
+              @click="{modalAccountInfos = row.item.transactions, modalAccountTitle = 'Transactions'}"
+              >Details</b-button
+            >
           </div>
           <div v-else>
             <p>None</p>
           </div>
         </template>
 
-        <template v-slot:row-details="row">
-          <h3>Transactions</h3>
-          <b-table
-            id="accountDetails"
-            :items="row.item.transactions"
-            :fields="transactionFields"
-          >
-          </b-table>
+        <template #cell(self_transactions)="row">
+          <div v-if="row.item.self_transactions.length > 0">
+            <b-button
+              v-b-modal.account
+              @click="{modalAccountInfos = row.item.self_transactions, modalAccountTitle = 'Deposits/Withdrawals'}"
+              >Details</b-button
+            >
+          </div>
+          <div v-else>
+            <p>None</p>
+          </div>
         </template>
       </b-table>
     </b-row>
+
+    {% verbatim %}
+    <b-modal id="account" :title="modalAccountTitle" size="xl">
+      <b-table id="accountDetails" :items="modalAccountInfos"> </b-table>
+    </b-modal>
+    {% endverbatim %}
+
     <hr class="solid" />
     <div>
       <h3>All Accounts</h3>
@@ -108,20 +125,28 @@
           >
             <template #cell(transactions)="row">
               <div v-if="row.item.transactions.length > 0">
-                <b-button @click="row.toggleDetails()">Details</b-button>
+                <b-button
+                  v-b-modal.account
+                  @click="{modalAccountInfos = row.item.transactions, modalAccountTitle = 'Transactions'}"
+                  >Details</b-button
+                >
               </div>
               <div v-else>
                 <p>None</p>
               </div>
             </template>
 
-            <template v-slot:row-details="row">
-              <h3>Transactions</h3>
-              <b-table
-                :items="row.item.transactions"
-                :fields="transactionFields"
-              >
-              </b-table>
+            <template #cell(self_transactions)="row">
+              <div v-if="row.item.self_transactions.length > 0">
+                <b-button
+                  v-b-modal.account
+                  @click="{modalAccountInfos = row.item.self_transactions, modalAccountTitle = 'Deposits/Withdrawals'}"
+                  >Details</b-button
+                >
+              </div>
+              <div v-else>
+                <p>None</p>
+              </div>
             </template>
           </b-table>
         </div>
@@ -158,6 +183,8 @@
         accounts: null,
         showFirstTable: false,
         singleAccount: [],
+        modalAccountInfos: [],
+        modalAccountTitle: "",
         accountFields: [
           {
             key: "id",
@@ -183,8 +210,13 @@
             key: "transactions",
             label: "Transactions",
           },
+          {
+            key: "self_transactions",
+            label: "Deposits/Withdrawals",
+          },
         ],
         transactionFields: ["id", "account_from", "account_to", "amount"],
+        selfTransactionFields: ["id", "account", "amount"],
       };
     },
     created() {
@@ -204,6 +236,7 @@
           fetch(url)
             .then((response) => response.json())
             .then((account) => {
+              console.log(account);
               this.singleAccount.shift();
               this.singleAccount.push(account);
             });
