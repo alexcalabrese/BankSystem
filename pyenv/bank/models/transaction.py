@@ -1,7 +1,11 @@
 import uuid
 from django.db import models
+
+from bank.utils import is_valid_uuid
+
+from .selfTransansaction import SelfTransaction
 from .account import Account
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 
 
 class Transaction(models.Model):
@@ -20,6 +24,14 @@ class Transaction(models.Model):
 
 
 def get_transaction_if_exist(id):
+    if not is_valid_uuid(id):
+        raise ValidationError(
+            {"message": "Error 400, id is not valid"})
+
+    if SelfTransaction.objects.filter(pk=id).exists():
+        raise ValidationError(
+            {"message": "Error 400, cannot divert a Deposit/Withdrawal"})
+
     try:
         transaction = Transaction.objects.get(pk=id)
     except Exception:
