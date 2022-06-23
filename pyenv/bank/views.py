@@ -10,6 +10,8 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError, ParseError, NotFound
 from django.shortcuts import render
 
+def custom_not_found(response):
+    return JsonResponse({"message": "Error 404, page not found"}, status=status.HTTP_404_NOT_FOUND, safe=False)
 
 def set_name_surname_header(response, serializer):
     response['X-Sistema-Bancario'] = str(serializer['name'].value) + \
@@ -54,7 +56,7 @@ def account_list(request):
     # Expected body parameters:
     #   - id
     if request.method == 'DELETE':
-        account_id = request.data.get('id', False)
+        account_id = request.GET.get('id', False)
         found_account = get_account_if_exist(account_id)
 
         found_account.is_active = 0
@@ -97,6 +99,7 @@ def account_detail(request, id):
 
         if new_transaction.is_valid(raise_exception=True):
             amount = new_transaction.validated_data.get('amount')
+
 
             if amount >= 0:
                 account.deposit(abs(amount))
@@ -173,6 +176,10 @@ def new_transfer(request):
             account_from = get_account_if_exist(request_account_from)
             account_to = account_from
         else:
+            if request_account_from == False or request_account_to == False:
+                raise ValidationError(
+                    {'message': 'Error 400, sender and receiver are required'})
+            
             account_from = get_account_if_exist(request_account_from)
             account_to = get_account_if_exist(
                 request_account_to)
@@ -206,7 +213,7 @@ def new_divert(request):
     # Expected body parameters:
     #   - transaction_id
     if request.method == 'POST':
-        transaction_id = request.data.get('transaction_id', False)
+        transaction_id = request.data.get('id', False)
         transaction = get_transaction_if_exist(transaction_id)
 
         if transaction.account_from.is_active == 0 or transaction.account_to.is_active == 0:
@@ -229,6 +236,9 @@ def new_divert(request):
                 account_to=transaction_account_from,
                 amount=-amount_to_divert
             )
+
+            transaction.is_diverted = 1
+            transaction.save()
 
             new_transaction_serializer = TransactionSerializer(new_transaction)
         else:
