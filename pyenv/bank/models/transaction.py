@@ -16,6 +16,7 @@ class Transaction(models.Model):
     account_to = models.ForeignKey(
         Account, related_name='account_to', null=True, on_delete=models.DO_NOTHING)
     amount = models.FloatField(default=0)
+    is_diverted = models.BooleanField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
@@ -34,6 +35,12 @@ def get_transaction_if_exist(id):
 
     try:
         transaction = Transaction.objects.get(pk=id)
-    except Exception:
+
+        if transaction.is_diverted:
+            raise ValidationError(
+                {"message": "Error 400, transaction is alredy diverted"})
+        else:
+            transaction = Transaction.objects.get(pk=id, is_diverted=0)
+    except Transaction.DoesNotExist:
         raise NotFound({"message": "Error 404, transaction not found"})
     return transaction
