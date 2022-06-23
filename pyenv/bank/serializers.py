@@ -27,10 +27,12 @@ class SelfTransactionSerializer(serializers.ModelSerializer):
 
         amount = validate_float_field(data.get('amount'), "amount")
 
-        if abs(amount) >= abs(account.balance):
-            raise serializers.ValidationError(
-                {"message": 'Error 400, not enough money',
-                    "current_balance": account.balance})
+        if amount < 0:
+            if abs(amount) >= abs(account.balance):
+                raise serializers.ValidationError(
+                    {"message": 'Error 400, not enough money',
+                        "current_balance": account.balance})
+
         return data
 
 
