@@ -22,7 +22,7 @@ We took the opportunity of this project to be able to approach the use of **Pyth
 
 In addition, it was interesting to manage the dynamics of group work among colleagues by using software versioning tools.
 
-If you want to run on your machine ➡️ **[Installation](/INSTALLATION)**.
+If you want to run on your machine ➡️ **[Installation](/INSTALLATION.md)**.
 
 <!-- Abbiamo sfruttato l'occasione di questo progetto per poterci approcciare all'utilizzo di **Python** e **Django** in quanto, molto richiesti dal mercato, ma a noi sconosciuti. -->
 <!-- 
@@ -33,11 +33,11 @@ Inoltre, è stato interessante gestire le dinamiche di lavoro di gruppo tra coll
 
 # 🎨 Design Choices
    
-- **[Frontend](#🖌-frontend)**
-- **[Backend](#🐍-backend)**
+- **[Frontend](#frontend)**
+- **[Backend](#backend)**
   
 
-## 🖌 &nbsp; Frontend
+## <a name="frontend"></a> 🖌 &nbsp; Frontend
 Framework:  **Vuejs**.
 
 ### 🍂 &nbsp; **Dependencies**
@@ -54,7 +54,7 @@ For **convenience** in retrieving ids and verifying the correctness of the infor
 
   
 
-## 🐍  Backend 
+## <a name="backend"></a> 🐍 Backend 
 
 Framework: **Python w/ Django**.
 
