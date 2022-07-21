@@ -38,7 +38,7 @@ def get_transaction_if_exist(id):
 
         if transaction.is_diverted:
             raise ValidationError(
-                {"message": "Error 400, transaction is alredy diverted"})
+                {"message": "Error 400, transaction is already diverted"})
         else:
             transaction = Transaction.objects.get(pk=id, is_diverted=0)
     except Transaction.DoesNotExist:
