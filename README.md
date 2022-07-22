@@ -13,7 +13,7 @@
 # 📜 Description
 
 > ⚠️
-> This is a project created for **Distributed System** exam.
+> This is a Bank System created for **Distributed System** exam.
 
 > 🏆
 > Score: ***30 with honors*** / 30.
